@@ -69,7 +69,7 @@ Output: `build/libs/panda-breeder-1.0.0.jar` and a sources JAR. Unit report: `bu
 
 - **Build and unit tests passed** on JDK 25 targeting Java 21. Tests cover brown×brown, carrier×carrier, carrier×non-carrier, mutation-only outcomes, distributions, uncertainty, adaptive strategy, parentage, persistence, backup, corruption and isolation.
 - **Singleplayer client integration passed:** all 16 vanilla mutation-selector outcomes; 100,000 seeded vanilla inheritance samples against the engine; both synchronized genes including normal defaults; duplicate registration; GUI parent assignment; metadata refresh; save/reload; profile isolation; disconnect cleanup. Screenshots are captured for visual review.
-- **Dedicated multiplayer/Paper runtime testing was not performed**, at the project owner's request. Compatibility follows from standard metadata and no server dependencies, rather than a completed server test matrix.
+- **Dedicated multiplayer/Paper runtime testing was not performed**. Compatibility follows from standard metadata and no server dependencies, rather than a completed server test matrix.
 - Growth, cooldown, bamboo, travel, survival, capacity and modified server mechanics are excluded from optimizer costs. Exactness applies only within its stated assumptions.
 - Automatic discovery cannot prove a birth or parentage. Parentage requires explicit confirmation. Unknown parent beliefs may be correlated; the calculator assumes independence.
 - Interface language is English. Long text can be truncated at large GUI scales; complete model explanations are in the linked documents.
