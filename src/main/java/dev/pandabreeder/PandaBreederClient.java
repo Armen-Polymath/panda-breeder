@@ -36,7 +36,7 @@ public final class PandaBreederClient implements ClientModInitializer {
             if(++ticks%20==0) refresh(client);
         });
     }
-    public void openScreen() { notifyPlayer("Panda collection: "+data.pandas.size()+" registered."); }
+    public void openScreen() { MinecraftClient.getInstance().setScreen(new BreedingScreen(this)); }
     private void updateContext(MinecraftClient client) {
         String next=null;
         if(client.world!=null && client.player!=null) {
