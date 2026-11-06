@@ -1,0 +1,17 @@
+.gradle/
+build/
+run/
+logs/
+.tooling/
+.idea/
+.vscode/
+*.iml
+*.class
+*.log
+.env
+.env.*
+*.pem
+*.key
+hs_err_pid*
+.DS_Store
+Thumbs.db
