@@ -90,7 +90,7 @@ public final class BreedingScreen extends Screen {
                 for(int i=0;i<lines.length;i++)if(54+i*15<height-60)line(c,lines[i],54+i*15,i==0?GREEN:WHITE);
             }
         }
-        line(c,mod.message,height-13,GREY);
+        c.drawTextWithShadow(textRenderer,textRenderer.trimToWidth(mod.message,Math.max(0,width-85)),12,height-13,GREY);
         super.render(c,mx,my,delta);
     }
     private void calculator(DrawContext c) {

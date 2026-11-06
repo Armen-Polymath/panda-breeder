@@ -23,8 +23,8 @@ public abstract class PandaLabelMixin {
         if(mod==null||!mod.data.overlays||!(entity instanceof PandaEntity)||state.invisible||state.squaredDistanceToCamera>1024||MinecraftClient.getInstance().options.hudHidden)return;
         var p=mod.data.find(entity.getUuid());if(p==null)return;
         boolean best=mod.recommended(p);
-        String genes=p.genotype()==null?"uncertain":p.main+"/"+p.hidden+" | brown "+p.genotype().brownCopies();
-        var label=Text.literal((best?"★ ":"")+p.id+" | "+genes+(best?" | BREED":"")).formatted(best?Formatting.GREEN:Formatting.WHITE);
+        String genes=p.genotype()==null?"?":p.main.name().substring(0,2)+"/"+p.hidden.name().substring(0,2)+" "+p.genotype().brownCopies()+"B";
+        var label=Text.literal((best?"★ ":"")+p.id+" "+genes).formatted(best?Formatting.GREEN:Formatting.WHITE);
         if(entity.hasCustomName()) label.append(Text.literal(" | "+entity.getName().getString()).formatted(Formatting.GRAY));
         state.displayName=label;state.nameLabelPos=new Vec3d(0,entity.getHeight()+0.5,0);
     }
