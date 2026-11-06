@@ -5,6 +5,7 @@
   "name": "Panda Breeder",
   "description": "Client-side panda genetics and breeding strategy assistant.",
   "environment": "client",
+  "mixins": ["pandabreeder.mixins.json"],
   "entrypoints": {"client": ["dev.pandabreeder.PandaBreederClient"]},
   "depends": {"fabricloader": ">=0.18.4", "minecraft": "1.21.11", "java": ">=21", "fabric-api": "*"}
 }
