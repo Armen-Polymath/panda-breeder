@@ -12,6 +12,11 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 import java.util.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import java.nio.file.*;
+import java.io.IOException;
+import org.slf4j.LoggerFactory;
 public final class PandaBreederClient implements ClientModInitializer {
     public static PandaBreederClient INSTANCE;
     public CollectionData data=new CollectionData();
@@ -21,8 +26,15 @@ public final class PandaBreederClient implements ClientModInitializer {
     private final Set<UUID> loaded=new HashSet<>(), seen=new HashSet<>();
     private int ticks;
     private KeyBinding register,open,toggle;
+    private PandaStore store;
+    private boolean writable;
+    private Path root;
     @Override public void onInitializeClient() {
         INSTANCE=this;
+        root=FabricLoader.getInstance().getConfigDir().resolve("pandabreeder");
+        try { if(Files.exists(root.resolve("profile.txt"))) {String saved=Files.readString(root.resolve("profile.txt")).trim();if(!saved.isBlank()&&saved.length()<=64)profile=saved;} }
+        catch(IOException e){LoggerFactory.getLogger("pandabreeder").warn("Could not read selected profile",e);}
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client->save());
         var category=KeyBinding.Category.create(Identifier.of("pandabreeder","pandas"));
         open=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.pandabreeder.open",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_P,category));
         register=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.pandabreeder.register",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_R,category));
@@ -45,19 +57,30 @@ public final class PandaBreederClient implements ClientModInitializer {
             next=server+"|"+client.world.getRegistryKey().getValue()+"|"+profile;
         }
         if(Objects.equals(next,identity)) return;
-        save(); identity=next; data=new CollectionData(); loaded.clear(); seen.clear(); plan=null;
+        save(); identity=next; data=new CollectionData(); loaded.clear(); seen.clear(); plan=null;store=null;writable=false;
         if(next!=null) load();
     }
     public void changeProfile(String value) {
         if(value.isBlank()||value.length()>64) { notifyPlayer("World profile must be 1–64 characters."); return; }
         profile=value.trim(); updateContext(MinecraftClient.getInstance());
+        try { Files.createDirectories(root);Files.writeString(root.resolve("profile.txt"),profile); }
+        catch(IOException e){notifyPlayer("Could not save profile preference; see log.");LoggerFactory.getLogger("pandabreeder").error("Profile save failed",e);}
     }
-    public void load() {}
-    public void save() {}
+    public void load() {
+        store=new PandaStore(root,identity);
+        try {data=store.load();writable=true;message="Look at a panda and press R.";}
+        catch(IOException e){notifyPlayer("Collection cannot be loaded; original preserved. Check log.");LoggerFactory.getLogger("pandabreeder").error(message,e);}
+    }
+    public void save() {
+        if(store==null||!writable)return;
+        try {store.save(data);}
+        catch(IOException|RuntimeException e){notifyPlayer("Could not save panda data; see log.");LoggerFactory.getLogger("pandabreeder").error(message,e);}
+    }
     public PandaEntity target() {
         return MinecraftClient.getInstance().crosshairTarget instanceof EntityHitResult h && h.getEntity() instanceof PandaEntity p?p:null;
     }
     public void registerTarget() {
+        if(!writable){notifyPlayer("Storage unavailable; registration disabled to protect saved data.");return;}
         var panda=target(); if(panda==null||!panda.isAlive()) { notifyPlayer("Look directly at a living panda."); return; }
         register(panda); save(); recompute();
     }
